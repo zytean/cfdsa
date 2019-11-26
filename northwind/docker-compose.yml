@@ -1,0 +1,34 @@
+version: '3'
+
+networks:
+  appnet: 
+
+volumes:
+  dbvol:
+
+services:
+  nwdb:
+    image: zytean/nwmysql:v2
+    build:
+      context: ./database
+    environment:
+      - MYSQL_ROOT_PASSWORD=Reallyreallyveryveryveryseeeeeccreettttpw
+    networks:
+      - appnet
+    volumes:
+      - dbvol:/var/lib/mysql
+  nwserver:
+    image: zytean/nwserver:v1
+    build:
+      context: ./server
+    environment:
+      - DB_PASSWORD=Reallyreallyveryveryveryseeeeeccreettttpw
+      - DB_HOST=nwdb
+    networks:
+      - appnet
+    ports:
+      - 80:3000
+    depends_on:
+      - nwdb
+    
+
