@@ -1,0 +1,67 @@
+---
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: nwserver-deploy
+  namespace: nw
+  labels:
+    name: nwserver-deploy
+    version: v1
+spec:
+  # number of pod
+  replicas: 6
+  minReadySeconds: 5
+  selector:
+    matchLabels:
+      name: nwserver-pod
+      version: v1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    # pod template
+    metadata:
+      name: nwserver-pod
+      labels:
+        app.kubernetes.io/name: nwserver
+        app.kubernetes.io/version: v1
+        app.kubernetes.io/part-of: nwapp
+        name: nwserver-pod
+        version: v1
+    spec:
+      containers:
+        - name: nwserver-container
+          image: stackupiss/northwind-app:v2
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+              httpGet:
+                path: /health
+                port: nwserver-port
+              timeoutSeconds: 5
+              failureThreshold: 3
+              successThreshold: 1
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: nw-secret
+                  key: db_password
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef: 
+                  name: nw-config
+                  key: db_host
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef: 
+                  name: nw-config
+                  key: db_user
+            - name: INSTANCE_IP_ADDRESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          ports:
+            - name: nwserver-port
+              containerPort: 3000

@@ -1,0 +1,60 @@
+---
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: nwdb-deploy
+  namespace: nw
+  labels:
+    name: nwdb-deploy
+    version: v1
+spec:
+  # number of pod
+  replicas: 1
+  minReadySeconds: 60
+  selector:
+    matchLabels:
+      name: nwdb-pod
+      version: v1
+  template:
+    # pod template
+    metadata:
+      name: nwdb-pod
+      labels:
+        app.kubernetes.io/name: nwdb
+        app.kubernetes.io/version: v1
+        app.kubernetes.io/part-of: nwapp
+        name: nwdb-pod
+        version: v1
+    spec:
+      containers:
+        - name: nwdb-container
+          image: zytean/nwmysql:v2
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: nw-secret
+                  key: db_password
+          ports:
+            - name: nwdb-port
+              containerPort: 3306
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nwdb-svc
+  namespace: nw
+  labels:
+    name: nwdb-svc
+    version: v1
+spec:
+  type: ClusterIP
+  selector:
+    name: nwdb-pod
+    version: v1
+  ports:
+  - name: nwdb-mysql
+    port: 3306
+    targetPort: nwdb-port

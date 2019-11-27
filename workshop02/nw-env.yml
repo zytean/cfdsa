@@ -1,0 +1,27 @@
+---
+apiVersion: v1 
+kind: Namespace 
+metadata:
+  name: nw
+  labels: 
+    version: v1
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nw-config
+  namespace: nw
+data:
+  db_host: nwdb-svc.nw.svc.cluster.local
+  db_user: root
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: nw-secret
+  namespace: nw
+data:
+  # db_password: Reallyreallyveryveryveryseeeeeccreettttpw
+  db_password: UmVhbGx5cmVhbGx5dmVyeXZlcnl2ZXJ5c2VlZWVlY2NyZWV0dHR0cHc=
