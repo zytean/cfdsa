@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-v1-svc
+  namespace: ws3
+spec:
+  selector:
+    name: app-deploy
+    version: v1
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: ws3server-port

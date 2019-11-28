@@ -1,0 +1,16 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: mysqldb-svc
+  namespace: ws3
+  labels:
+    name: mysqldb-svc
+    version: v1
+spec:
+  type:  ClusterIP
+  selector:
+    name:  mysqldb-pod
+  ports:
+  - name:  mysqldb-svc-port
+    port:  3306
+    targetPort:  mysqldb-port

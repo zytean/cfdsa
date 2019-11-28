@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  app-v1-deploy
+  namespace: ws3
+  labels:
+    name:  app-v1-deploy
+spec:
+  # number of pod
+  replicas: 3
+  minReadySeconds: 5
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      name:  app-deploy
+      version: v1
+  template:
+    metadata:
+      name: app-v1-pod
+      labels: 
+        name: app-deploy
+        version: v1
+    spec:
+      containers:
+      - image:  zytean/nwserver:v1
+        name:  app-v1-container
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: "20m"
+            memory: "55M"
+        # livenessProbe:
+        #   httpGet:
+        #     path: /health
+        #   initialDelaySeconds: 90
+        #   timeoutSeconds: 10
+        # readinessProbe:
+        #   httpGet:
+        #     path: /_status/healthz
+        #     port: 5000
+        #   initialDelaySeconds: 30
+        #   timeoutSeconds: 10
+        env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ws3-secret
+                  key: db_password
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef: 
+                  name: ws3-config
+                  key: db_host
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef: 
+                  name: ws3-config
+                  key: db_user
+            - name: INSTANCE_IP_ADDRESS
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP   
+        ports:
+        - containerPort:  3000
+          name:  ws3server-port
+      
