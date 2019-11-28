@@ -30,13 +30,16 @@ spec:
         - name: nwdb-container
           image: zytean/nwmysql:v2
           imagePullPolicy: IfNotPresent
-          # livenessProbe:
-          #     exec:
-          #       command: 
-          #         - mysqladmin ping -uroot -p${MYSQL_ROOT_PASSWORD} | grep alive || exit
-          #     timeoutSeconds: 5
-          #     failureThreshold: 3
-          #     successThreshold: 1
+          livenessProbe:
+              exec:
+                command: 
+                - bash 
+                - "-c" 
+                - | 
+                  mysqladmin ping -uroot -p${MYSQL_ROOT_PASSWORD} | grep alive || exit
+              timeoutSeconds: 5
+              failureThreshold: 3
+              successThreshold: 1
           env:
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
