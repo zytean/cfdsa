@@ -1,0 +1,28 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+
+metadata:
+  name: nw-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: “false”
+  namespace: {{ include "nw.namespace" . }}
+  labels:
+    name: nw-ingress
+    version: {{ .Values.nw.version }}
+spec:
+  rules:
+  - http:
+      paths:
+        - path: /v1
+          backend:
+            serviceName: app-v1-svc
+            servicePort: 80
+        - path: /v2
+          backend:
+            serviceName: app-v2-svc
+            servicePort: 80
+
+  
+

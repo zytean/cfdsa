@@ -1,0 +1,43 @@
+# Default values for mlapp.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 
+  nwdb:
+    count: 1
+  nwserver:
+    count: 3
+
+image:
+  nwdb:
+    name: zytean/nwmysql
+    version: v2
+  nwserverv1:
+    name: zytean/nwserver
+    version: v1
+  nwserverv2:
+    name: stackupiss/northwind-app
+    version: v2
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: ""
+
+storage:
+  provisioner: dobs.csi.digitalocean.com
+  classname: do-block-storage
+  accessmodes: ReadWriteOnce
+  storagesize: 10Gi
+
+db:
+  user: root
+  password: UmVhbGx5cmVhbGx5dmVyeXZlcnl2ZXJ5c2VlZWVlY2NyZWV0dHR0cHc=
+
+nw:
+  version: v1
+
+service:
+  type: ClusterIP
+  port:
+    nwdb: 3306
+    nwserver: 3000
