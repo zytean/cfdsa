@@ -1,0 +1,50 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  istio-weather-deploy
+  namespace: istio-weather
+  labels:
+    name: istio-weather-deploy
+spec:
+  # number of pod
+  replicas: 1
+  minReadySeconds: 5
+  selector:
+    matchLabels:
+      name:  istio-weather-pod
+  template:
+    metadata:
+      name: istio-weather-pod
+      labels: 
+        name: istio-weather-pod
+    spec:
+      containers:
+      - image:  stackupiss/weather:v1
+        name:  istio-weather-container
+        imagePullPolicy: IfNotPresent
+        env:
+            - name: APP_ID
+              valueFrom:
+                secretKeyRef:
+                  name: istio-weather-secret
+                  key: weather-api-key
+        ports:
+        - containerPort:  3000
+          name:  weather-port
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: istio-weather-svc
+  namespace: istio-weather
+  labels:
+    name: istio-weather-svc
+spec:
+  type: ClusterIP
+  selector:
+    name: istio-weather-pod
+  ports:
+  - name:  istio-weather-svc-port
+    port: 80
+    targetPort: weather-port

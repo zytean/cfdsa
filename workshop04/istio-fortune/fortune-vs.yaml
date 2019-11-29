@@ -1,0 +1,61 @@
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+
+metadata:
+   name: fortune-ingress-vs
+
+spec:
+   hosts:
+   - "*"
+   gateways:
+   - fortune-ingress.default.svc.cluster.local
+   http:
+   -  match:
+      - uri:
+         prefix: /v1
+      rewrite:
+         uri: / #rewriting rule
+      route:
+         - destination:
+            host: fortuneapp-svc.default.svc.cluster.local
+            port: 
+               number: 80 #kubernetes service port number
+
+   -  match:
+      - uri:
+         prefix: "/v2"
+      rewrite:
+         uri: / #rewriting rule
+      route:
+         - destination:
+            host: fortuneappv2-svc.default.svc.cluster.local
+            port: 
+               number: 80 #kubernetes service port number
+   -  match:
+      - uri:
+         prefix: /random
+      rewrite:
+         uri: / #rewriting rule
+      route:
+         - destination:
+            host: fortuneappv2-svc.default.svc.cluster.local
+            port: 
+               number: 80 #kubernetes service port number
+           weight: 70
+         - destination:
+            host: fortuneapp-svc.default.svc.cluster.local
+            port: 
+               number: 80 #kubernetes service port number
+           weight: 30
+   -  match:
+      - uri:
+         exact: "/"
+      rewrite:
+         uri: / #rewriting rule
+      route:
+         - destination:
+            host: fortuneappv2-svc.default.svc.cluster.local
+            port: 
+               number: 80 #kubernetes service port number
+      

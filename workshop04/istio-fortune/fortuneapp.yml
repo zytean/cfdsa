@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fortuneapp
+spec:
+  selector:
+    matchLabels:
+      app: fortuneapp
+  template:
+    metadata:
+      labels:
+        app: fortuneapp
+    spec:
+      containers:
+      - name: fortuneapp
+        image: stackupiss/fortune:v1
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fortuneapp-svc
+spec:
+  selector:
+    app: fortuneapp
+  ports:
+  - port: 80
+    targetPort: 3000

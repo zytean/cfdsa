@@ -1,0 +1,16 @@
+---
+apiVersion: v1 
+kind: Namespace 
+metadata:
+  name: istio-weather
+  labels: 
+    version: v1
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: istio-weather-secret
+  namespace: istio-weather
+data:
+  weather-api-key: MzgxOTg0ZTdlMGUyZDRlZDQ0MzdkMDE0MGUxMDg2NTg=
